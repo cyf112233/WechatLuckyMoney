@@ -21,7 +21,11 @@ xposed微信抢红包，适配微信最新版本8.0.57
 
 感谢大佬：
 
- @rarnu    https://github.com/rarnu/wechat_no_revoke
+| @LuckyPray | [DexKit](https://github.com/LuckyPray/DexKit)                |
+| ---------- | ------------------------------------------------------------ |
+| @rarnu     | [wechat_no_revoke](https://github.com/rarnu/wechat_no_revoke) |
+|            |                                                              |
+|            |                                                              |
 
 
 
