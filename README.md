@@ -40,3 +40,124 @@ xposed微信抢红包，适配微信最新版本8.0.57
 4. 本APP使用者因为违反本声明的规定而触犯中华人民共和国法律的，一切后果自负，作者不承担任何责任。
 5. 凡以任何方式直接、间接使用APP者，视为自愿接受本声明的约束。
 6. 本APP如无意中侵犯了某个媒体或个人的知识产权，请来信或来电告之，作者将立即删除。
+
+
+
+
+
+
+
+### 微信长安菜单逆向8.0.57
+//            XposedHelpers.findAndHookMethod(
+//                    "android.view.View",
+//                    hookParam.getAppClassLoader(),
+//                    "setOnLongClickListener",
+//                    "android.view.View$OnLongClickListener",
+//                    new XC_MethodHook() {
+//                        @Override
+//                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                            android.view.View.OnLongClickListener originalListener = (View.OnLongClickListener) param.args[0];
+//                            View.OnLongClickListener newListener = v -> {
+//                                // 在这里处理长按事件
+//                                XposedBridge.log("长按事件发生在View: " + v);
+//                                XposedBridge.log("长按事件发生在getClass: " + originalListener.getClass().getName());
+//                                XposedDebugUtil.printFilteredStackTrace();
+//                                // 调用原始监听器
+//                                return originalListener != null && originalListener.onLongClick(v);
+//                            };
+//                            param.args[0] = newListener;
+//
+//                        }
+//                    });
+
+            XposedHelpers.findAndHookMethod("com.tencent.mm.ui.widget.MMNeat7extView", hookParam.getAppClassLoader(), "setOnLongClickListener", "android.view.View$OnLongClickListener", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    Object arg = param.args[0];
+                    XposedBridge.log("setOnLongClickListener: " + arg.getClass().getName());
+                }
+
+            });
+
+            // Hook nv4.t's constructor to log f281947g's class
+            XposedHelpers.findAndHookConstructor(
+                    "nv4.t",
+                    hookParam.getAppClassLoader(),
+                    "nv4.m",
+                    new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                            Object menuController = XposedHelpers.getObjectField(param.thisObject, "g");
+                            XposedBridge.log("f281947g class: " + (menuController != null ? menuController.getClass().getName() : "null"));
+                        }
+                    }
+            );
+
+            XposedHelpers.findAndHookMethod("com.tencent.mm.ui.chatting.viewitems.s0", hookParam.getAppClassLoader(), "c", "android.view.View", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    Object selectableTextHelper = param.thisObject;
+                    XposedBridge.log("viewitems.s0: " + param.args[0]);
+
+                }
+
+            });
+
+
+            //创建菜单的地方,文本
+
+            /**
+             * com.tencent.mm.ui.chatting.viewitems.lq  MicroMsg.ChattingItemTextFromBase
+             *                                          com/tencent/mm/ui/chatting/viewitems/ChattingItemTextBase$ChattingItemTextFromBase
+             *
+             *z3  z3 implements ContextMen
+             *    filed  ArrayList<Object> d;
+             *
+             * com.tencent.mm.storage.l9
+             *    MMRevoke.RevokeMsgManager
+             *    MicroMsg.MsgInfo
+             */
+            XposedHelpers.findAndHookMethod("com.tencent.mm.ui.chatting.viewitems.lq", hookParam.getAppClassLoader(), "h0", "sn4.z3", "android.view.View", "android.view.ContextMenu$ContextMenuInfo", "com.tencent.mm.storage.l9", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                            // 获取菜单控制器 sn4.z3
+
+                }
+            });
+
+            /**
+             *              *z3  z3 implements ContextMen
+             *              *    filed  ArrayList<Object> d;
+             */
+            XposedHelpers.findAndHookMethod("com.tencent.mm.ui.chatting.viewitems.l0", hookParam.getAppClassLoader(), "a", "sn4.z3", "android.view.View", "android.view.ContextMenu$ContextMenuInfo", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+
+                    XposedBridge.log("viewitems.l0.a: " + param.args[0]);
+                    Object z3Instance =   param.args[0];
+                    MenuItem   item =  (MenuItem)XposedHelpers.callMethod(
+                            z3Instance,
+                            "c",
+                            0,  //groupid
+                            200,  //itemID
+                            0,   // 位置
+                            "发圈",
+                            android.R.drawable.ic_menu_slideshow  //图标
+                    );
+                    item.setIcon(XposedInit.MODULE_RESOURCES.getDrawable(R.drawable.wx_share));
+                }
+            });
+
+            //MicroMsg.ChattingItem", "context item select failed, null dataTag
+            XposedHelpers.findAndHookMethod("com.tencent.mm.ui.chatting.viewitems.p0", hookParam.getAppClassLoader(), "onMMMenuItemSelected", "android.view.MenuItem", int.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    MenuItem menuItem =(MenuItem)param.args[0];
+                    int itemId = menuItem.getItemId();
+                    int position = (int) param.args[1];
+                    if (itemId == 200) {
+                        XposedBridge.log("我被点击了: "+ itemId+",=" +position);
+                    }
+                }
+
+            });
