@@ -48,27 +48,29 @@ xposed微信抢红包，适配微信最新版本8.0.57
 
 
 ### 微信长安菜单逆向8.0.57
-//            XposedHelpers.findAndHookMethod(
-//                    "android.view.View",
-//                    hookParam.getAppClassLoader(),
-//                    "setOnLongClickListener",
-//                    "android.view.View$OnLongClickListener",
-//                    new XC_MethodHook() {
-//                        @Override
-//                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                            android.view.View.OnLongClickListener originalListener = (View.OnLongClickListener) param.args[0];
-//                            View.OnLongClickListener newListener = v -> {
-//                                // 在这里处理长按事件
-//                                XposedBridge.log("长按事件发生在View: " + v);
-//                                XposedBridge.log("长按事件发生在getClass: " + originalListener.getClass().getName());
-//                                XposedDebugUtil.printFilteredStackTrace();
-//                                // 调用原始监听器
-//                                return originalListener != null && originalListener.onLongClick(v);
-//                            };
-//                            param.args[0] = newListener;
-//
-//                        }
-//                    });
+   try {
+
+            XposedHelpers.findAndHookMethod(
+                    "android.view.View",
+                    hookParam.getAppClassLoader(),
+                    "setOnLongClickListener",
+                    "android.view.View$OnLongClickListener",
+                    new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                            android.view.View.OnLongClickListener originalListener = (View.OnLongClickListener) param.args[0];
+                            View.OnLongClickListener newListener = v -> {
+                                // 在这里处理长按事件
+                                XposedBridge.log("长按事件发生在View: " + v);
+                                XposedBridge.log("长按事件发生在getClass: " + originalListener.getClass().getName());
+                                XposedDebugUtil.printFilteredStackTrace();
+                                // 调用原始监听器
+                                return originalListener != null && originalListener.onLongClick(v);
+                            };
+                            param.args[0] = newListener;
+
+                        }
+                    });
 
             XposedHelpers.findAndHookMethod("com.tencent.mm.ui.widget.MMNeat7extView", hookParam.getAppClassLoader(), "setOnLongClickListener", "android.view.View$OnLongClickListener", new XC_MethodHook() {
                 @Override
