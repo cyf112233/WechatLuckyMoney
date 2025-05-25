@@ -1,4 +1,4 @@
-# WechatLuckyMoney
+# WechatLuckyMoney  适配Lsposded ,FPA
 
 xposed微信抢红包，适配微信最新版本8.0.58
 支持微信版本 8.0.57 ,8.0.58
